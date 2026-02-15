@@ -31,18 +31,17 @@ class HomeScreen extends StatelessWidget {
         },
       ),
 
-      // ================= BODY =================
       body: CustomScrollView(
         slivers: [
 
           // ================= HEADER =================
           SliverToBoxAdapter(
             child: Container(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 28),
+              padding: const EdgeInsets.fromLTRB(16, 24, 16, 32),
               decoration: const BoxDecoration(
                 color: AppColors.primary,
                 borderRadius: BorderRadius.vertical(
-                  bottom: Radius.circular(24),
+                  bottom: Radius.circular(32),
                 ),
               ),
               child: Column(
@@ -86,18 +85,30 @@ class HomeScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             sliver: SliverToBoxAdapter(
               child: Container(
-                padding: const EdgeInsets.all(16),
+                padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(24),
                   gradient: const LinearGradient(
-                    colors: [AppColors.primary, AppColors.secondary],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [
+                      AppColors.primary,
+                      AppColors.secondary,
+                    ],
                   ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.primary.withOpacity(0.25),
+                      blurRadius: 12,
+                      offset: const Offset(0, 6),
+                    ),
+                  ],
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const Text(
-                      'Soldes d\'été',
+                      'Soldes d\'été 🔥',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 18,
@@ -109,7 +120,7 @@ class HomeScreen extends StatelessWidget {
                       'Jusqu\'à -50% sur une sélection',
                       style: TextStyle(color: Colors.white70),
                     ),
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 14),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
@@ -143,7 +154,7 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
 
-          // ================= CATEGORIES (SLIVER GRID) =================
+          // ================= CATEGORIES =================
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             sliver: SliverGrid(
@@ -157,21 +168,25 @@ class HomeScreen extends StatelessWidget {
                     child: Column(
                       children: [
                         Container(
-                          height: 52,
-                          width: 52,
+                          height: 64,
+                          width: 64,
                           decoration: BoxDecoration(
-                            color: AppColors.secondary.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(16),
+                            color: const Color(0xFFFFF1E6),
+                            borderRadius: BorderRadius.circular(20),
                           ),
                           child: Icon(
                             c['icon'] as IconData,
                             color: AppColors.primary,
+                            size: 26,
                           ),
                         ),
                         const SizedBox(height: 6),
                         Text(
                           c['label'] as String,
-                          style: const TextStyle(fontSize: 12),
+                          style: const TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ],
                     ),
@@ -188,16 +203,36 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
 
-          // ================= TITRE LIVRES =================
+          // ================= TITRE LIVRES + VOIR TOUT =================
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
             sliver: SliverToBoxAdapter(
-              child: Text(
-                books.isEmpty ? 'Aucun livre trouvé' : 'Livres populaires',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    books.isEmpty
+                        ? 'Aucun livre trouvé'
+                        : 'Livres populaires',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  if (books.isNotEmpty)
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, AppRoutes.books);
+                      },
+                      child: const Text(
+                        'Voir tout',
+                        style: TextStyle(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                ],
               ),
             ),
           ),
@@ -227,9 +262,9 @@ class HomeScreen extends StatelessWidget {
               ),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
-                childAspectRatio: 0.58,
+                mainAxisSpacing: 14,
+                crossAxisSpacing: 14,
+                childAspectRatio: 0.62,
               ),
             ),
           ),

@@ -4,7 +4,11 @@ import 'package:provider/provider.dart';
 import '../../core/constants/colors.dart';
 import '../../core/routes/app_routes.dart';
 import '../../providers/cart_provider.dart';
+import '../../providers/order_provider.dart';
 import '../../widgets/navbar/bottom_navbar.dart';
+import '../../models/order_model.dart';
+
+
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({super.key});
@@ -58,12 +62,37 @@ class _PaymentScreenState extends State<PaymentScreen> {
               onPressed: cart.items.isEmpty
                   ? null
                   : () {
+                final order = OrderModel(
+                  id: DateTime.now().millisecondsSinceEpoch.toString(),
+                  createdAt: DateTime.now(),
+                  subtotal: cart.subtotal,
+                  shipping: cart.items.isEmpty ? 0 : 2000,
+                  total: cart.total,
+                  paymentMethod: paymentMethod,
+                  status: 'Confirmée',
+                  items: cart.items,
+                );
+
+                // 🔴 AJOUT UNIQUE (LOGIQUE SEULEMENT)
+                context.read<OrderProvider>().createOrder(
+                  items: List.from(order.items),
+                  subtotal: order.subtotal,
+                  shipping: order.shipping,
+                  total: order.total,
+                  paymentMethod: order.paymentMethod,
+                );
+                context.read<CartProvider>().clearCart();
+
+                // 🔵 NAVIGATION IDENTIQUE
                 Navigator.pushNamed(
                   context,
                   AppRoutes.orderDetail,
-                  
+                  arguments: order,
                 );
               },
+
+
+
               child: const Text(
                 'Confirmer le paiement',
                 style: TextStyle(

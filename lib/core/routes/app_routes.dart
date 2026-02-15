@@ -9,12 +9,16 @@ import '../../screens/books/search_screen.dart';
 import '../../screens/cart/cart_screen.dart';
 import '../../screens/payment/payment_screen.dart';
 import '../../screens/orders/orders_screen.dart';
+import '../../screens/profile/edit_profile_screen.dart';
+import '../../screens/profile/language_screen.dart';
 import '../../screens/profile/profile_screen.dart';
 import '../../screens/profile/addresses_screen.dart';
 import '../../screens/orders/order_detail_screen.dart';
 import '../../screens/profile/addresses_screen.dart';
 import '../../screens/payment/add_payment_method_screen.dart';
 import '../../models/order_model.dart';
+import '../../screens/orders/order_tracking_screen.dart';
+import '../../screens/profile/settings_screen.dart';
 
 
 
@@ -33,6 +37,13 @@ class AppRoutes {
   static const orderDetail = '/order-detail';
   static const addPaymentMethod = '/add-payment-method';
   static const address = '/address';
+  static const String orderTracking = '/order-tracking';
+  static const settings = '/settings';
+  static const editProfile = '/edit-profile';
+  static const language = '/language';
+  static const security = '/security';
+
+
 
   static final Map<String, WidgetBuilder> routes = {
     auth: (_) =>  AuthScreen(),
@@ -46,11 +57,23 @@ class AppRoutes {
     profile: (_) => const ProfileScreen(),
     address: (_) => const AddressesScreen(),
     addPaymentMethod: (_) => AddPaymentMethodScreen(),
+    settings: (_) => const SettingsScreen(),
+    editProfile: (_) => EditProfileScreen(),
+    language: (_) => const LanguageScreen(),
+    //security: (_) => const SecurityScreen(),
+    //language: (context) => const LanguageScreen(),
+
+
 
     orderDetail: (context) {
       final order =
       ModalRoute.of(context)!.settings.arguments as OrderModel;
       return OrderDetailScreen(order: order);
+    },
+    orderTracking: (context) {
+      final order =
+      ModalRoute.of(context)!.settings.arguments as OrderModel;
+      return OrderTrackingScreen(order: order);
     },
 
   };

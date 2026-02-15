@@ -33,7 +33,7 @@ class ProfileScreen extends StatelessWidget {
         currentIndex: 3,
         onTap: (index) {
           if (index == 0) Navigator.pushNamed(context, AppRoutes.home);
-          if (index == 1) Navigator.pushNamed(context, AppRoutes.categories);
+          if (index == 1) Navigator.pushNamed(context, AppRoutes.books);
           if (index == 2) Navigator.pushNamed(context, AppRoutes.cart);
         },
       ),
@@ -65,7 +65,9 @@ class ProfileScreen extends StatelessWidget {
                       const Spacer(),
                       IconButton(
                         icon: const Icon(Icons.settings, color: Colors.white),
-                        onPressed: () {},
+                        onPressed: () {
+                          Navigator.pushNamed(context, AppRoutes.settings);
+                        },
                       ),
                     ],
                   ),
@@ -88,7 +90,7 @@ class ProfileScreen extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            auth.userName ?? 'Jean Kouassi',
+                            auth.user?.name ?? 'Utilisateur',
                             style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -96,19 +98,20 @@ class ProfileScreen extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            auth.email ?? 'diacha3108@gmail.com',
+                            auth.user?.email ?? '',
                             style: const TextStyle(
                               color: Colors.white70,
                               fontSize: 13,
                             ),
                           ),
-                          const Text(
-                            '+225 07 XX XX XX XX',
-                            style: TextStyle(
+                          Text(
+                            auth.user?.phone ?? '',
+                            style: const TextStyle(
                               color: Colors.white70,
                               fontSize: 13,
                             ),
                           ),
+
                         ],
                       ),
                     ],

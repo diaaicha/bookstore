@@ -6,6 +6,12 @@ import '../../core/routes/app_routes.dart';
 import '../../providers/cart_provider.dart';
 import '../../widgets/navbar/bottom_navbar.dart';
 
+// SCREENS EXISTANTS
+import '../home/home_screen.dart';
+import '../books/books_list_screen.dart';
+import '../profile/profile_screen.dart';
+import 'cart_screen.dart';
+
 class CartScreen extends StatelessWidget {
   const CartScreen({super.key});
 
@@ -25,7 +31,45 @@ class CartScreen extends StatelessWidget {
 
       bottomNavigationBar: BottomNavbar(
         currentIndex: 2,
-        onTap: (_) {},
+        onTap: (index) {
+          switch (index) {
+            case 0: // Accueil
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const HomeScreen(),
+                ),
+              );
+              break;
+
+            case 1: // Categories
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const BooksListScreen(),
+                ),
+              );
+              break;
+
+            case 2: // Cart
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const CartScreen(),
+                ),
+              );
+              break;
+
+            case 3: // Profile
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const ProfileScreen(),
+                ),
+              );
+              break;
+          }
+        },
       ),
 
       body: cart.items.isEmpty
@@ -206,7 +250,10 @@ class CartScreen extends StatelessWidget {
                         ),
                       ),
                       onPressed: () {
-                        Navigator.pushNamed(context, AppRoutes.payment);
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.payment,
+                        );
                       },
                       child: const Text(
                         'Passer à la commande',
