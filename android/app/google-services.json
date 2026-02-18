@@ -12,7 +12,12 @@
           "package_name": "sn.ipsl.elibrary"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "94367065491-r09h1q6vde6vf92d1kha0ioautgoqe1f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyA6PJgbcBG0GPx05sm0JwJnjojdMUWnCGs"
@@ -20,7 +25,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "94367065491-r09h1q6vde6vf92d1kha0ioautgoqe1f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
