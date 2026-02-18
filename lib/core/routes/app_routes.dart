@@ -19,7 +19,10 @@ import '../../screens/payment/add_payment_method_screen.dart';
 import '../../models/order_model.dart';
 import '../../screens/orders/order_tracking_screen.dart';
 import '../../screens/profile/settings_screen.dart';
-
+import '../../screens/profile/notifications_screen.dart';
+import '../../screens/profile/help_support_screen.dart';
+import '../../screens/profile/about_screen.dart';
+import '../../screens/profile/favorites_screen.dart';
 
 
 class AppRoutes {
@@ -42,8 +45,10 @@ class AppRoutes {
   static const editProfile = '/edit-profile';
   static const language = '/language';
   static const security = '/security';
-
-
+  //static const notifications = '/notifications';
+  static const helpSupport = '/help-support';
+  static const about = '/about';
+  static const favorites = '/favorites';
 
   static final Map<String, WidgetBuilder> routes = {
     auth: (_) =>  AuthScreen(),
@@ -62,7 +67,10 @@ class AppRoutes {
     language: (_) => const LanguageScreen(),
     //security: (_) => const SecurityScreen(),
     //language: (context) => const LanguageScreen(),
-
+    notifications: (_) => NotificationsScreen(),
+    helpSupport: (_) => HelpSupportScreen(),
+    about: (_) => AboutScreen(),
+    favorites: (_) => const FavoritesScreen(),
 
 
     orderDetail: (context) {

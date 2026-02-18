@@ -6,12 +6,16 @@ class BookCard extends StatelessWidget {
   final BookModel book;
   final VoidCallback onTap;
   final VoidCallback onAdd;
+  final bool isFavorite;          // ✅ état favori
+  final VoidCallback onFavorite;  // ✅ callback favori
 
   const BookCard({
     super.key,
     required this.book,
     required this.onTap,
     required this.onAdd,
+    required this.isFavorite,
+    required this.onFavorite,
   });
 
   @override
@@ -31,10 +35,9 @@ class BookCard extends StatelessWidget {
           ],
         ),
         child: Column(
-          mainAxisSize: MainAxisSize.min, // 🔴 IMPORTANT
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             // ================= IMAGE =================
             Stack(
               children: [
@@ -44,23 +47,26 @@ class BookCard extends StatelessWidget {
                   ),
                   child: Image.asset(
                     book.image,
-                    height: 140, // 🔴 RÉDUIT
+                    height: 140,
                     width: double.infinity,
                     fit: BoxFit.cover,
                   ),
                 ),
 
-                // FAVORI
+                // FAVORI CLIQUABLE
                 Positioned(
                   top: 8,
                   left: 8,
-                  child: CircleAvatar(
-                    radius: 14,
-                    backgroundColor: Colors.white,
-                    child: Icon(
-                      Icons.favorite_border,
-                      size: 16,
-                      color: AppColors.primary,
+                  child: GestureDetector(
+                    onTap: onFavorite,
+                    child: CircleAvatar(
+                      radius: 14,
+                      backgroundColor: Colors.white,
+                      child: Icon(
+                        isFavorite ? Icons.favorite : Icons.favorite_border,
+                        size: 16,
+                        color: isFavorite ? Colors.red : AppColors.primary,
+                      ),
                     ),
                   ),
                 ),
@@ -107,9 +113,7 @@ class BookCard extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                     ),
                   ),
-
                   const SizedBox(height: 2),
-
                   Text(
                     book.author,
                     maxLines: 1,
@@ -119,9 +123,7 @@ class BookCard extends StatelessWidget {
                       color: AppColors.gray500,
                     ),
                   ),
-
                   const SizedBox(height: 6),
-
                   Row(
                     children: [
                       Expanded(
@@ -151,9 +153,7 @@ class BookCard extends StatelessWidget {
                       ],
                     ],
                   ),
-
                   const SizedBox(height: 8),
-
                   SizedBox(
                     width: double.infinity,
                     height: 32,

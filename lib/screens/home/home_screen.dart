@@ -5,6 +5,7 @@ import '../../core/constants/colors.dart';
 import '../../core/routes/app_routes.dart';
 import '../../providers/book_provider.dart';
 import '../../providers/cart_provider.dart';
+import '../../providers/favorite_provider.dart';
 import '../../widgets/cards/book_card.dart';
 import '../../widgets/inputs/search_field.dart';
 import '../../widgets/navbar/bottom_navbar.dart';
@@ -16,6 +17,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final bookProvider = context.watch<BookProvider>();
     final cartProvider = context.read<CartProvider>();
+    final favoriteProvider = context.watch<FavoriteProvider>(); // ✅
     final books = bookProvider.filteredBooks;
 
     return Scaffold(
@@ -140,9 +142,79 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
 
-          // ================= TITRE CATEGORIES =================
+          // ================= LIVRES POPULAIRES =================
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
+            sliver: SliverToBoxAdapter(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    books.isEmpty ? 'Aucun livre trouvé' : 'Livres populaires',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  if (books.isNotEmpty)
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.pushNamed(context, AppRoutes.books);
+                      },
+                      child: const Text(
+                        'Voir tout',
+                        style: TextStyle(
+                          color: AppColors.primary,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ),
+
+          // ================= GRID LIVRES =================
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            sliver: SliverGrid(
+              delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                  final book = books[index];
+                  final isFavorite = favoriteProvider.isFavorite(book.id); // ✅
+
+                  return BookCard(
+                    book: book,
+                    onTap: () {
+                      bookProvider.selectBook(book);
+                      Navigator.pushNamed(
+                        context,
+                        AppRoutes.bookDetail,
+                      );
+                    },
+                    onAdd: () {
+                      cartProvider.addToCart(book);
+                    },
+                    isFavorite: isFavorite, // ✅ état du cœur
+                    onFavorite: () {
+                      favoriteProvider.toggle(book); // ✅ toggle favori
+                    },
+                  );
+                },
+                childCount: books.length,
+              ),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisSpacing: 14,
+                crossAxisSpacing: 14,
+                childAspectRatio: 0.62,
+              ),
+            ),
+          ),
+
+          // ================= CATEGORIES =================
           const SliverPadding(
-            padding: EdgeInsets.fromLTRB(16, 8, 16, 12),
+            padding: EdgeInsets.fromLTRB(16, 24, 16, 12),
             sliver: SliverToBoxAdapter(
               child: Text(
                 'Catégories',
@@ -154,7 +226,6 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
 
-          // ================= CATEGORIES =================
           SliverPadding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             sliver: SliverGrid(
@@ -199,72 +270,6 @@ class HomeScreen extends StatelessWidget {
                 mainAxisSpacing: 12,
                 crossAxisSpacing: 12,
                 childAspectRatio: 0.9,
-              ),
-            ),
-          ),
-
-          // ================= TITRE LIVRES + VOIR TOUT =================
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(16, 24, 16, 12),
-            sliver: SliverToBoxAdapter(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    books.isEmpty
-                        ? 'Aucun livre trouvé'
-                        : 'Livres populaires',
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  if (books.isNotEmpty)
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(context, AppRoutes.books);
-                      },
-                      child: const Text(
-                        'Voir tout',
-                        style: TextStyle(
-                          color: AppColors.primary,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-          ),
-
-          // ================= GRID LIVRES =================
-          SliverPadding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            sliver: SliverGrid(
-              delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                  final book = books[index];
-                  return BookCard(
-                    book: book,
-                    onTap: () {
-                      bookProvider.selectBook(book);
-                      Navigator.pushNamed(
-                        context,
-                        AppRoutes.bookDetail,
-                      );
-                    },
-                    onAdd: () {
-                      cartProvider.addToCart(book);
-                    },
-                  );
-                },
-                childCount: books.length,
-              ),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                mainAxisSpacing: 14,
-                crossAxisSpacing: 14,
-                childAspectRatio: 0.62,
               ),
             ),
           ),

@@ -7,6 +7,7 @@ import '../../providers/auth_provider.dart';
 import '../../providers/order_provider.dart';
 import '../../providers/favorite_provider.dart';
 import '../../widgets/navbar/bottom_navbar.dart';
+import '../../widgets/cards/profile_stat_card.dart';
 
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
@@ -18,12 +19,8 @@ class ProfileScreen extends StatelessWidget {
     final favorites = context.watch<FavoriteProvider>().favorites;
 
     final totalOrders = orders.length;
-    final inProgress =
-        orders.where((o) => o.status != 'Confirmée').length;
-    final purchasedBooks = orders.fold<int>(
-      0,
-          (sum, o) => sum + o.items.length,
-    );
+    final inProgress = orders.where((o) => o.status != 'Confirmée').length;
+    final purchasedBooks = orders.fold<int>(0, (sum, o) => sum + o.items.length);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -32,8 +29,9 @@ class ProfileScreen extends StatelessWidget {
       bottomNavigationBar: BottomNavbar(
         currentIndex: 3,
         onTap: (index) {
+          if (index == 3) return;
           if (index == 0) Navigator.pushNamed(context, AppRoutes.home);
-          if (index == 1) Navigator.pushNamed(context, AppRoutes.books);
+          if (index == 1) Navigator.pushNamed(context, AppRoutes.categories);
           if (index == 2) Navigator.pushNamed(context, AppRoutes.cart);
         },
       ),
@@ -46,9 +44,7 @@ class ProfileScreen extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(16, 32, 16, 24),
               decoration: const BoxDecoration(
                 color: AppColors.primary,
-                borderRadius: BorderRadius.vertical(
-                  bottom: Radius.circular(24),
-                ),
+                borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
               ),
               child: Column(
                 children: [
@@ -65,9 +61,11 @@ class ProfileScreen extends StatelessWidget {
                       const Spacer(),
                       IconButton(
                         icon: const Icon(Icons.settings, color: Colors.white),
-                        onPressed: () {
-                          Navigator.pushNamed(context, AppRoutes.settings);
-                        },
+                        onPressed: () {},
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.edit, color: Colors.white),
+                        onPressed: () => Navigator.pushNamed(context, AppRoutes.editProfile),
                       ),
                     ],
                   ),
@@ -77,20 +75,16 @@ class ProfileScreen extends StatelessWidget {
                   Row(
                     children: [
                       const CircleAvatar(
-                        radius: 32,
+                        radius: 40,
                         backgroundColor: Colors.white,
-                        child: Icon(
-                          Icons.person,
-                          color: AppColors.primary,
-                          size: 32,
-                        ),
+                        child: Icon(Icons.person, color: AppColors.primary, size: 40),
                       ),
                       const SizedBox(width: 12),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            auth.user?.name ?? 'Utilisateur',
+                            auth.userName ?? 'Jean Kouassi',
                             style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
@@ -98,20 +92,19 @@ class ProfileScreen extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            auth.user?.email ?? '',
+                            auth.email ?? 'diacha3108@gmail.com',
                             style: const TextStyle(
                               color: Colors.white70,
                               fontSize: 13,
                             ),
                           ),
-                          Text(
-                            auth.user?.phone ?? '',
-                            style: const TextStyle(
+                          const Text(
+                            '+225 07 XX XX XX XX',
+                            style: TextStyle(
                               color: Colors.white70,
                               fontSize: 13,
                             ),
                           ),
-
                         ],
                       ),
                     ],
@@ -124,13 +117,13 @@ class ProfileScreen extends StatelessWidget {
 
             // ================= STATS =================
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _statCard('Commandes', totalOrders),
-                  _statCard('En cours', inProgress),
-                  _statCard('Livres achetés', purchasedBooks),
+                  ProfileStatCard(label: 'Commandes', value: '$totalOrders'),
+                  ProfileStatCard(label: 'En cours', value: '$inProgress'),
+                  ProfileStatCard(label: 'Livres achetés', value: '$purchasedBooks'),
                 ],
               ),
             ),
@@ -142,61 +135,52 @@ class ProfileScreen extends StatelessWidget {
               _menuItem(
                 icon: Icons.receipt_long,
                 label: 'Mes commandes',
-                onTap: () =>
-                    Navigator.pushNamed(context, AppRoutes.orders),
+                onTap: () => Navigator.pushNamed(context, AppRoutes.orders),
               ),
               _menuItem(
                 icon: Icons.favorite_border,
                 label: 'Mes favoris',
-                onTap: () =>
-                    Navigator.pushNamed(context, AppRoutes.profile),
+                onTap: () => Navigator.pushNamed(context, AppRoutes.favorites),
               ),
               _menuItem(
                 icon: Icons.location_on_outlined,
                 label: 'Adresses de livraison',
-                onTap: () =>
-                    Navigator.pushNamed(context, AppRoutes.address),
+                onTap: () => Navigator.pushNamed(context, AppRoutes.address),
               ),
             ]),
 
+            const SizedBox(height: 12),
             _menuSection([
               _menuItem(
                 icon: Icons.credit_card,
                 label: 'Moyens de paiement',
-                onTap: () => Navigator.pushNamed(
-                  context,
-                  AppRoutes.addPaymentMethod,
-                ),
+                onTap: () => Navigator.pushNamed(context, AppRoutes.addPaymentMethod),
               ),
               _menuItem(
                 icon: Icons.notifications_none,
                 label: 'Notifications',
-                onTap: () {},
+                onTap: () => Navigator.pushNamed(context, AppRoutes.notifications),
               ),
               _menuItem(
                 icon: Icons.help_outline,
                 label: 'Aide & Support',
-                onTap: () {},
+                onTap: () => Navigator.pushNamed(context, AppRoutes.helpSupport),
               ),
-            ]),
-
-            _menuSection([
               _menuItem(
                 icon: Icons.info_outline,
                 label: 'À propos',
-                onTap: () {},
+                onTap: () => Navigator.pushNamed(context, AppRoutes.about),
               ),
+            ]),
+            const SizedBox(height: 12),
+            _menuSection([
               _menuItem(
                 icon: Icons.logout,
                 label: 'Se déconnecter',
                 color: Colors.red,
                 onTap: () {
                   auth.logout();
-                  Navigator.pushNamedAndRemoveUntil(
-                    context,
-                    AppRoutes.auth,
-                        (_) => false,
-                  );
+                  Navigator.pushNamedAndRemoveUntil(context, AppRoutes.auth, (_) => false);
                 },
               ),
             ]),
@@ -209,46 +193,6 @@ class ProfileScreen extends StatelessWidget {
   }
 
   // ================= COMPONENTS =================
-
-  Widget _statCard(String label, int value) {
-    return Expanded(
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 4),
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 6,
-            ),
-          ],
-        ),
-        child: Column(
-          children: [
-            Text(
-              '$value',
-              style: const TextStyle(
-                color: AppColors.primary,
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: const TextStyle(
-                fontSize: 12,
-                color: AppColors.gray400,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   Widget _menuSection(List<Widget> children) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -257,10 +201,7 @@ class ProfileScreen extends StatelessWidget {
           color: Colors.white,
           borderRadius: BorderRadius.circular(16),
           boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.05),
-              blurRadius: 6,
-            ),
+            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 6),
           ],
         ),
         child: Column(children: children),

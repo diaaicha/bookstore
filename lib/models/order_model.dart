@@ -9,6 +9,7 @@ class OrderModel {
   final String paymentMethod;      // ✅ mode de paiement
   final String status;             // ✅ statut
   final List<CartItemModel> items; // ✅ livres commandés
+  final Map<String, String>? address; // ✅ adresse sélectionnée
 
   OrderModel({
     required this.id,
@@ -19,5 +20,6 @@ class OrderModel {
     required this.paymentMethod,
     required this.status,
     required this.items,
+    this.address, // ⚡ peut être null si aucune adresse
   });
 }

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../core/constants/colors.dart';
 import '../../providers/book_provider.dart';
 import '../../providers/cart_provider.dart';
+import '../../providers/favorite_provider.dart'; // ✅ ajouter
 import '../../widgets/inputs/search_field.dart';
 import '../../widgets/cards/book_card.dart';
 import '../../core/routes/app_routes.dart';
@@ -15,6 +16,7 @@ class SearchScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final bookProvider = context.watch<BookProvider>();
     final cartProvider = context.read<CartProvider>();
+    final favoriteProvider = context.watch<FavoriteProvider>(); // ✅ ajouter
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -35,7 +37,7 @@ class SearchScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          // 🔍 SEARCH BAR (SANS hintText)
+          // 🔍 SEARCH BAR
           Container(
             padding: const EdgeInsets.all(16),
             color: AppColors.primary,
@@ -59,13 +61,13 @@ class SearchScreen extends StatelessWidget {
                   itemCount: books.length,
                   itemBuilder: (context, index) {
                     final book = books[index];
+                    final isFavorite = favoriteProvider.isFavorite(book.id); // ✅
 
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 16),
                       child: BookCard(
                         book: book,
 
-                        // ✅ OBLIGATOIRE
                         onAdd: () {
                           cartProvider.addToCart(book);
                         },
@@ -76,6 +78,12 @@ class SearchScreen extends StatelessWidget {
                             context,
                             AppRoutes.bookDetail,
                           );
+                        },
+
+                        // ✅ FAVORIS
+                        isFavorite: isFavorite,
+                        onFavorite: () {
+                          favoriteProvider.toggle(book);
                         },
                       ),
                     );
