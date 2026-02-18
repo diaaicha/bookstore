@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "94367065491",
+    "project_id": "library-d6121",
+    "storage_bucket": "library-d6121.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:94367065491:android:9c06da11f2579912cb3466",
+        "android_client_info": {
+          "package_name": "sn.ipsl.elibrary"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA6PJgbcBG0GPx05sm0JwJnjojdMUWnCGs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
