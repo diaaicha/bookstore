@@ -24,6 +24,7 @@ class _AuthScreenState extends State<AuthScreen>
 
   bool rememberMe = false;
   bool hidePassword = true;
+  bool isLoading = false;
 
   @override
   void initState() {
@@ -39,47 +40,58 @@ class _AuthScreenState extends State<AuthScreen>
     super.dispose();
   }
 
-  void _login() {
-    context.read<AuthProvider>().login(
-      email: emailCtrl.text,
-    );
+  // 🔥 LOGIN CORRIGÉ
+  Future<void> _login() async {
+    if (emailCtrl.text.isEmpty || passwordCtrl.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Veuillez remplir tous les champs"),
+        ),
+      );
+      return;
+    }
 
-    Navigator.pushReplacementNamed(context, AppRoutes.home);
+    try {
+      await context.read<AuthProvider>().login(
+        email: emailCtrl.text.trim(),
+        password: passwordCtrl.text.trim(),
+      );
+
+      Navigator.pushReplacementNamed(
+        context,
+        AppRoutes.home,
+      );
+
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Erreur : ${e.toString()}"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.white,
 
-      // ✅ FOOTER AJOUTÉ
       bottomNavigationBar: BottomNavbar(
-        currentIndex: 3, // Profil (écran auth)
+        currentIndex: 3,
         onTap: (index) {
           switch (index) {
             case 0:
-              Navigator.pushReplacementNamed(
-                context,
-                AppRoutes.home,
-              );
+              Navigator.pushReplacementNamed(context, AppRoutes.home);
               break;
-
             case 1:
-              Navigator.pushReplacementNamed(
-                context,
-                AppRoutes.books,
-              );
+              Navigator.pushReplacementNamed(context, AppRoutes.books);
               break;
-
             case 2:
-              Navigator.pushReplacementNamed(
-                context,
-                AppRoutes.cart,
-              );
+              Navigator.pushReplacementNamed(context, AppRoutes.cart);
               break;
-
             case 3:
-            // Déjà sur Auth (profil non connecté)
               break;
           }
         },
@@ -92,7 +104,6 @@ class _AuthScreenState extends State<AuthScreen>
             children: [
               const SizedBox(height: 32),
 
-              // LOGO
               Container(
                 height: 72,
                 width: 72,
@@ -123,7 +134,6 @@ class _AuthScreenState extends State<AuthScreen>
 
               const SizedBox(height: 24),
 
-              // TABS
               TabBar(
                 controller: _tabController,
                 indicatorColor: AppColors.primary,
@@ -137,7 +147,6 @@ class _AuthScreenState extends State<AuthScreen>
 
               const SizedBox(height: 24),
 
-              // FORM
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -200,8 +209,11 @@ class _AuthScreenState extends State<AuthScreen>
 
                   PrimaryButton(
                     text: 'Se connecter',
-                    onPressed: _login,
+                    onPressed: () async {
+                      await _login();
+                    },
                   ),
+
 
                   const SizedBox(height: 24),
                   const Center(child: Text('Ou continuer avec')),
@@ -242,7 +254,6 @@ class _AuthScreenState extends State<AuthScreen>
                       ),
                     ),
                   ),
-
                 ],
               ),
             ],

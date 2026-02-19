@@ -45,6 +45,10 @@ dependencies:
   firebase_auth: ^6.1.4
   cloud_firestore: ^6.1.2
   firebase_messaging: ^16.1.1
+  image_picker: ^1.0.4
+  http: ^1.2.0
+
+
 
 dev_dependencies:
   flutter_test:

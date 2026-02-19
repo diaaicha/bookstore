@@ -4,16 +4,23 @@ import '../models/book_model.dart';
 class BookProvider with ChangeNotifier {
   List<BookModel> _books = [];
   BookModel? _selectedBook;
+
   String _searchQuery = '';
+  String _selectedCategory = '';
 
   BookProvider() {
     _loadMockBooks();
   }
 
+  // ================= GETTERS =================
+
   List<BookModel> get books => _books;
   BookModel? get selectedBook => _selectedBook;
+  int get totalBooks => _books.length;
+  String get selectedCategory => _selectedCategory;
 
   // ================= MOCK DATA =================
+
   void _loadMockBooks() {
     _books = [
       BookModel(
@@ -28,8 +35,8 @@ class BookProvider with ChangeNotifier {
         rating: 4.8,
         reviews: 1200,
         description:
-        'Un guide pratique pour construire de bonnes habitudes et briser les mauvaises.',
-        publisher: 'Penguin Random House',
+        'Un guide pratique pour construire de bonnes habitudes.',
+        publisher: 'Penguin',
         pages: 320,
         isbn: '9780735211292',
         inStock: true,
@@ -40,13 +47,14 @@ class BookProvider with ChangeNotifier {
         title: 'Python Programming',
         author: 'John Smith',
         price: 18000,
+        oldPrice: null,
+        discount: null,
         image: 'assets/images/python.jpg',
         category: 'Informatique',
         rating: 4.5,
         reviews: 850,
-        description:
-        'Apprenez Python étape par étape avec des exemples pratiques.',
-        publisher: 'O\'Reilly Media',
+        description: 'Apprenez Python étape par étape.',
+        publisher: 'OReilly',
         pages: 450,
         isbn: '9781492051367',
         inStock: true,
@@ -64,7 +72,7 @@ class BookProvider with ChangeNotifier {
         rating: 4.6,
         reviews: 980,
         description:
-        'Un livre culte sur l’éducation financière et l’indépendance.',
+        'Un livre culte sur l’éducation financière.',
         publisher: 'Plata Publishing',
         pages: 336,
         isbn: '9781612680194',
@@ -76,12 +84,14 @@ class BookProvider with ChangeNotifier {
         title: 'The Little Prince',
         author: 'Antoine de Saint-Exupéry',
         price: 8000,
+        oldPrice: null,
+        discount: null,
         image: 'assets/images/little_prince.jpg',
         category: 'Romans',
         rating: 4.9,
         reviews: 2100,
         description:
-        'Un classique intemporel de la littérature mondiale.',
+        'Un classique intemporel de la littérature.',
         publisher: 'Gallimard',
         pages: 96,
         isbn: '9782070612758',
@@ -93,24 +103,74 @@ class BookProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  // ================= SELECTION =================
-  void selectBook(BookModel book) {
-    _selectedBook = book;
+  // ================= ADMIN LOGIC =================
+
+  void addBook(BookModel book) {
+    _books.add(book);
     notifyListeners();
   }
 
+  void deleteBook(int id) {
+    _books.removeWhere((b) => b.id == id);
+    notifyListeners();
+  }
+
+  void updateBook(BookModel updatedBook) {
+    final index =
+    _books.indexWhere((b) => b.id == updatedBook.id);
+
+    if (index != -1) {
+      _books[index] = updatedBook;
+      notifyListeners();
+    }
+  }
+
   // ================= SEARCH =================
+
   void setSearchQuery(String value) {
     _searchQuery = value.toLowerCase();
     notifyListeners();
   }
 
-  List<BookModel> get filteredBooks {
-    if (_searchQuery.isEmpty) return _books;
+  // ================= CATEGORY FILTER =================
 
-    return _books.where((b) {
-      return b.title.toLowerCase().contains(_searchQuery) ||
-          b.author.toLowerCase().contains(_searchQuery);
-    }).toList();
+  void setCategory(String category) {
+    _selectedCategory = category;
+    notifyListeners();
+  }
+
+  void clearCategory() {
+    _selectedCategory = '';
+    notifyListeners();
+  }
+
+  // ================= FILTERED BOOKS =================
+
+  List<BookModel> get filteredBooks {
+    List<BookModel> result = _books;
+
+    // 🔎 Search filter
+    if (_searchQuery.isNotEmpty) {
+      result = result.where((b) {
+        return b.title.toLowerCase().contains(_searchQuery) ||
+            b.author.toLowerCase().contains(_searchQuery);
+      }).toList();
+    }
+
+    // 📚 Category filter
+    if (_selectedCategory.isNotEmpty) {
+      result = result.where((b) {
+        return b.category == _selectedCategory;
+      }).toList();
+    }
+
+    return result;
+  }
+
+  // ================= SELECTION =================
+
+  void selectBook(BookModel book) {
+    _selectedBook = book;
+    notifyListeners();
   }
 }

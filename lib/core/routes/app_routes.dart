@@ -19,7 +19,10 @@ import '../../screens/payment/add_payment_method_screen.dart';
 import '../../models/order_model.dart';
 import '../../screens/orders/order_tracking_screen.dart';
 import '../../screens/profile/settings_screen.dart';
-
+import '../../screens/admin/admin_dashboard_screen.dart';
+import '../../screens/admin/admin_books_screen.dart';
+import '../../screens/admin/admin_orders_screen.dart';
+import '../../screens/admin/admin_users_screen.dart';
 
 
 class AppRoutes {
@@ -42,6 +45,11 @@ class AppRoutes {
   static const editProfile = '/edit-profile';
   static const language = '/language';
   static const security = '/security';
+  static const adminDashboard = '/admin';
+  static const adminBooks = '/admin-books';
+  static const adminOrders = '/admin-orders';
+  static const adminUsers = '/admin-users';
+
 
 
 
@@ -62,7 +70,10 @@ class AppRoutes {
     language: (_) => const LanguageScreen(),
     //security: (_) => const SecurityScreen(),
     //language: (context) => const LanguageScreen(),
-
+    // adminDashboard: (_) => const AdminDashboardScreen(),
+    // adminBooks: (_) => const AdminBooksScreen(),
+    // adminOrders: (_) => const AdminOrdersScreen(),
+    // adminUsers: (_) => const AdminUsersScreen(),
 
 
     orderDetail: (context) {
