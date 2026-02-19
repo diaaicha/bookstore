@@ -1,5 +1,7 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/constants/colors.dart';
 import '../../core/routes/app_routes.dart';
@@ -7,8 +9,6 @@ import '../../providers/cart_provider.dart';
 import '../../providers/order_provider.dart';
 import '../../widgets/navbar/bottom_navbar.dart';
 import '../../models/order_model.dart';
-
-
 
 class PaymentScreen extends StatefulWidget {
   const PaymentScreen({super.key});
@@ -19,6 +19,52 @@ class PaymentScreen extends StatefulWidget {
 
 class _PaymentScreenState extends State<PaymentScreen> {
   String paymentMethod = 'mobile';
+  Map<String, String>? selectedAddress;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadSelectedAddress();
+  }
+
+  // Charge l'adresse sélectionnée (si sauvegardée) ou la première adresse disponible
+  Future<void> _loadSelectedAddress() async {
+    final prefs = await SharedPreferences.getInstance();
+    final saved = prefs.getString('selected_address');
+
+    if (saved != null) {
+      setState(() {
+        selectedAddress = Map<String, String>.from(json.decode(saved));
+      });
+    } else {
+      // Récupère la première adresse disponible
+      final firstAddress = await _getFirstAvailableAddress();
+      if (firstAddress != null) {
+        _saveSelectedAddress(firstAddress);
+      }
+    }
+  }
+
+  // Sauvegarde l'adresse sélectionnée
+  Future<void> _saveSelectedAddress(Map<String, String> addr) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('selected_address', json.encode(addr));
+    setState(() {
+      selectedAddress = addr;
+    });
+  }
+
+  // Exemple de récupération de la première adresse
+  Future<Map<String, String>?> _getFirstAvailableAddress() async {
+    // Ici tu peux récupérer depuis ton provider ou ta liste d'adresses
+    // Pour l'exemple, on renvoie une adresse fixe
+    return {
+      'name': 'Yarame Diakhate',
+      'street': '123 Rue Exemple',
+      'city': 'Saint Louis',
+      'phone': '77 123 45 67',
+    };
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,15 +72,11 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-
-      // ================= APP BAR =================
       appBar: AppBar(
         title: const Text('Paiement'),
         backgroundColor: AppColors.primary,
         foregroundColor: Colors.white,
       ),
-
-      // ================= BOTTOM NAV =================
       bottomNavigationBar: BottomNavbar(
         currentIndex: 2,
         onTap: (index) {
@@ -43,8 +85,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
           if (index == 3) Navigator.pushNamed(context, AppRoutes.profile);
         },
       ),
-
-      // ================= BOUTON FIXE =================
       bottomSheet: SafeArea(
         child: Container(
           padding: const EdgeInsets.all(16),
@@ -59,7 +99,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   borderRadius: BorderRadius.circular(28),
                 ),
               ),
-              onPressed: cart.items.isEmpty
+              onPressed: cart.items.isEmpty || selectedAddress == null
                   ? null
                   : () {
                 final order = OrderModel(
@@ -71,28 +111,27 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   paymentMethod: paymentMethod,
                   status: 'Confirmée',
                   items: cart.items,
+                  address: selectedAddress,
                 );
 
-                // 🔴 AJOUT UNIQUE (LOGIQUE SEULEMENT)
                 context.read<OrderProvider>().createOrder(
                   items: List.from(order.items),
                   subtotal: order.subtotal,
                   shipping: order.shipping,
                   total: order.total,
                   paymentMethod: order.paymentMethod,
+                  address: order.address, // ✅ IMPORTANT
                 );
+
+
                 context.read<CartProvider>().clearCart();
 
-                // 🔵 NAVIGATION IDENTIQUE
                 Navigator.pushNamed(
                   context,
                   AppRoutes.orderDetail,
                   arguments: order,
                 );
               },
-
-
-
               child: const Text(
                 'Confirmer le paiement',
                 style: TextStyle(
@@ -105,48 +144,49 @@ class _PaymentScreenState extends State<PaymentScreen> {
           ),
         ),
       ),
-
-      // ================= BODY =================
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 110),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
-            // ================= ADRESSE =================
             _sectionTitle(
               'Adresse de livraison',
               action: 'Modifier',
-              onTap: () {
-                Navigator.pushNamed(context, AppRoutes.address);
+              onTap: () async {
+                final result =
+                await Navigator.pushNamed(context, AppRoutes.address);
+                if (result != null && result is Map<String, String>) {
+                  _saveSelectedAddress(result);
+                }
               },
             ),
             _card(
-              child: Column(
+              child: selectedAddress == null
+                  ? const Text('Aucune adresse sélectionnée')
+                  : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
+                children: [
                   Row(
                     children: [
-                      Icon(Icons.location_on, color: AppColors.primary),
-                      SizedBox(width: 6),
+                      const Icon(Icons.location_on,
+                          color: AppColors.primary),
+                      const SizedBox(width: 6),
                       Text(
-                        'Jean Kouassi',
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        selectedAddress!['name']!,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold),
                       ),
                     ],
                   ),
-                  SizedBox(height: 6),
-                  Text('Cocody, Angré 8ème Tranche'),
-                  Text('Abidjan, Côte d’Ivoire'),
-                  SizedBox(height: 4),
-                  Text('+225 07 XX XX XX XX'),
+                  const SizedBox(height: 6),
+                  Text(selectedAddress!['street']!),
+                  Text(selectedAddress!['city']!),
+                  const SizedBox(height: 4),
+                  Text(selectedAddress!['phone']!),
                 ],
               ),
             ),
-
             const SizedBox(height: 24),
-
-            // ================= MODE DE PAIEMENT =================
             _sectionTitle(
               'Mode de paiement',
               action: '+ Ajouter',
@@ -157,28 +197,21 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 );
               },
             ),
-
             _paymentOption(
               value: 'mobile',
               icon: Icons.phone_android,
               title: 'Mobile Money',
               subtitle: 'Orange Money, MTN, Moov',
             ),
-
             const SizedBox(height: 12),
-
             _paymentOption(
               value: 'card',
               icon: Icons.credit_card,
               title: 'Carte bancaire',
               subtitle: 'Visa, Mastercard',
             ),
-
             const SizedBox(height: 24),
-
-            // ================= RÉCAP =================
             _sectionTitle('Récapitulatif'),
-
             _card(
               child: Column(
                 children: [
@@ -229,9 +262,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                       ),
                     );
                   }),
-
                   const Divider(),
-
                   _priceRow('Sous-total', '${cart.subtotal} FCFA'),
                   _priceRow(
                     'Livraison',
@@ -253,10 +284,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     );
   }
 
-  // ================= COMPONENTS =================
-
-  Widget _sectionTitle(String title,
-      {String? action, VoidCallback? onTap}) {
+  Widget _sectionTitle(String title, {String? action, VoidCallback? onTap}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
@@ -309,7 +337,6 @@ class _PaymentScreenState extends State<PaymentScreen> {
     required String subtitle,
   }) {
     final selected = paymentMethod == value;
-
     return GestureDetector(
       onTap: () => setState(() => paymentMethod = value),
       child: Container(
@@ -336,17 +363,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    title,
-                    style: const TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(
-                      fontSize: 12,
-                      color: AppColors.gray500,
-                    ),
-                  ),
+                  Text(title,
+                      style: const TextStyle(fontWeight: FontWeight.w600)),
+                  Text(subtitle,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: AppColors.gray500,
+                      )),
                 ],
               ),
             ),
@@ -363,19 +386,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontWeight: bold ? FontWeight.bold : FontWeight.normal,
-            ),
-          ),
-          Text(
-            value,
-            style: TextStyle(
-              fontWeight: bold ? FontWeight.bold : FontWeight.normal,
-              color: highlight ? AppColors.primary : Colors.black,
-            ),
-          ),
+          Text(label,
+              style:
+              TextStyle(fontWeight: bold ? FontWeight.bold : FontWeight.normal)),
+          Text(value,
+              style: TextStyle(
+                  fontWeight: bold ? FontWeight.bold : FontWeight.normal,
+                  color: highlight ? AppColors.primary : Colors.black)),
         ],
       ),
     );

@@ -13,19 +13,21 @@ class OrderProvider with ChangeNotifier {
     required int shipping,
     required int total,
     required String paymentMethod,
+    required Map<String, String>? address, // ✅ AJOUTÉ
   }) {
     final order = OrderModel(
-      id: 'ORD-${DateTime.now().millisecondsSinceEpoch}', // ✅ String
-      createdAt: DateTime.now(),                          // ✅ DateTime
-      subtotal: subtotal,                                 // ✅ requis
-      shipping: shipping,                                 // ✅ requis
-      total: total,                                       // ✅ requis
-      paymentMethod: paymentMethod,                       // ✅ requis
-      status: 'Confirmée',                                // ✅ String
-      items: items,                                       // ✅ requis
+      id: 'ORD-${DateTime.now().millisecondsSinceEpoch}',
+      createdAt: DateTime.now(),
+      subtotal: subtotal,
+      shipping: shipping,
+      total: total,
+      paymentMethod: paymentMethod,
+      status: 'Confirmée',
+      items: items,
+      address: address, // ✅ AJOUTÉ
     );
 
-    _orders.insert(0, order); // dernière commande en haut
+    _orders.insert(0, order);
     notifyListeners();
   }
 }

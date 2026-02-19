@@ -145,6 +145,7 @@ class OrderTrackingScreen extends StatelessWidget {
                   _thinDivider(),
 
                   // ---------- ADRESSE ----------
+                  // ---------- ADRESSE ----------
                   const Text(
                     'Adresse de livraison',
                     style: TextStyle(
@@ -154,34 +155,44 @@ class OrderTrackingScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: 10),
 
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
-                      Icon(
-                        Icons.location_on,
-                        color: AppColors.primary,
-                        size: 20,
-                      ),
-                      SizedBox(width: 8),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Jean Kouassi',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Text('Cocody, Angré 8ème Tranche'),
-                            Text('Abidjan, Côte d’Ivoire'),
-                            Text('+225 07 XX XX XX XX'),
-                          ],
+                  if (order.address == null ||
+                      order.address!.isEmpty ||
+                      order.address!['name'] == null ||
+                      order.address!['name']!.isEmpty)
+                    const Text(
+                      'Aucune adresse sélectionnée',
+                      style: TextStyle(color: Colors.grey),
+                    )
+                  else
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(
+                          Icons.location_on,
+                          color: AppColors.primary,
+                          size: 20,
                         ),
-                      ),
-                    ],
-                  ),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                order.address!['name'] ?? '',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(order.address!['street'] ?? ''),
+                              Text(order.address!['city'] ?? ''),
+                              Text(order.address!['phone'] ?? ''),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+
 
                   _thinDivider(),
 
