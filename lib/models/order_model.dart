@@ -22,4 +22,41 @@ class OrderModel {
     required this.items,
     this.address, // ⚡ peut être null si aucune adresse
   });
+
+  factory OrderModel.fromJson(Map<String, dynamic> json) {
+    return OrderModel(
+      id: json['id']?.toString() ?? '',
+
+      createdAt: DateTime.tryParse(
+        json['createdAt']?.toString() ?? '',
+      ) ??
+          DateTime.now(),
+
+      subtotal: int.tryParse(json['subtotal'].toString()) ?? 0,
+      shipping: int.tryParse(json['shipping'].toString()) ?? 0,
+      total: int.tryParse(json['total'].toString()) ?? 0,
+
+      paymentMethod: json['paymentMethod']?.toString() ?? '',
+
+      status: json['status']?.toString() ?? 'confirmee',
+
+      items: (json['items'] as List? ?? [])
+          .map((item) =>
+          CartItemModel.fromJson(item as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "createdAt": createdAt.toIso8601String(),
+      "subtotal": subtotal,
+      "shipping": shipping,
+      "total": total,
+      "paymentMethod": paymentMethod,
+      "status": status,
+      "items": items.map((e) => e.toJson()).toList(),
+    };
+  }
 }

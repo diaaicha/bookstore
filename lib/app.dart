@@ -1,4 +1,5 @@
 import 'package:elibrary/providers/language_provider.dart';
+import 'package:elibrary/screens/app_wrapper.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -68,7 +69,7 @@ class BookStoreApp extends StatelessWidget {
             ],
 
             // ================= ROUTING =================
-            initialRoute: AppRoutes.auth,
+            home: const AppWrapper(),
             routes: AppRoutes.routes,
 
             onGenerateRoute: (settings) {

@@ -23,6 +23,10 @@ import '../../screens/profile/notifications_screen.dart';
 import '../../screens/profile/help_support_screen.dart';
 import '../../screens/profile/about_screen.dart';
 import '../../screens/profile/favorites_screen.dart';
+import '../../screens/admin/admin_dashboard_screen.dart';
+import '../../screens/admin/admin_books_screen.dart';
+import '../../screens/admin/admin_orders_screen.dart';
+import '../../screens/admin/admin_users_screen.dart';
 
 
 class AppRoutes {
@@ -49,6 +53,13 @@ class AppRoutes {
   static const helpSupport = '/help-support';
   static const about = '/about';
   static const favorites = '/favorites';
+  static const adminDashboard = '/admin';
+  static const adminBooks = '/admin-books';
+  static const adminOrders = '/admin-orders';
+  static const adminUsers = '/admin-users';
+
+
+
 
   static final Map<String, WidgetBuilder> routes = {
     auth: (_) =>  AuthScreen(),
@@ -71,6 +82,10 @@ class AppRoutes {
     helpSupport: (_) => HelpSupportScreen(),
     about: (_) => AboutScreen(),
     favorites: (_) => const FavoritesScreen(),
+    // adminDashboard: (_) => const AdminDashboardScreen(),
+    // adminBooks: (_) => const AdminBooksScreen(),
+    // adminOrders: (_) => const AdminOrdersScreen(),
+    // adminUsers: (_) => const AdminUsersScreen(),
 
 
     orderDetail: (context) {
